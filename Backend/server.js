@@ -1,26 +1,23 @@
 const express = require("express");
 const dotenv = require("dotenv");
-const chats = require("./data/data");
 const connectDB = require("./config/db");
-const path = require("path");
+const userRoutes = require("./routes/userRoutes");
+const { notFound, errorHandler } = require("./middleware/errorMiddleware");
 
-const app = express();
 dotenv.config();
 connectDB();
+const app = express();
+
+app.use(express.json());
 
 app.get("/", (req, res) => {
   res.send("API is Running Successfully");
 });
 
-app.get("/api/chat", (req, res) => {
-  res.send(chats);
-});
+app.use("/api/user", userRoutes);
 
-app.get("/api/chats/:id", (req, res) => {
-  //   console.log(req.params.id)
-  const singleChat = chats.find((c) => c._id === req.params.id);
-  res.send(singleChat);
-});
+app.use(notFound);
+app.use(errorHandler);
 
 const PORT = process.env.PORT || 5000;
 
